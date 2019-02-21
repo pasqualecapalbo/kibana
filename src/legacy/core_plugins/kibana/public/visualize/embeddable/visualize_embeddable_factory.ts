@@ -22,10 +22,7 @@ import { getVisualizeLoader } from 'ui/visualize/loader';
 import { VisualizeEmbeddable } from './visualize_embeddable';
 
 import { Legacy } from 'kibana';
-import {
-  EmbeddableInstanceConfiguration,
-  OnEmbeddableStateChanged,
-} from 'ui/embeddable/embeddable_factory';
+import { EmbeddableInstanceConfiguration, OnEmbeddableStateChanged } from 'ui/embeddable';
 import { SavedVisualizations } from '../types';
 import { DisabledLabEmbeddable } from './disabled_lab_embeddable';
 import { getIndexPattern } from './get_index_pattern';
