@@ -26,6 +26,7 @@ import {
   EuiContextMenuPanelDescriptor,
   EuiPopover,
 } from '@elastic/eui';
+import { DashboardContainer } from '../../embeddables/dashboard_container';
 
 export interface PanelOptionsMenuProps {
   toggleContextMenu: () => void;
@@ -33,6 +34,7 @@ export interface PanelOptionsMenuProps {
   closeContextMenu: () => void;
   panels: EuiContextMenuPanelDescriptor[];
   isViewMode: boolean;
+  container: DashboardContainer;
 }
 
 interface PanelOptionsMenuUiProps extends PanelOptionsMenuProps {

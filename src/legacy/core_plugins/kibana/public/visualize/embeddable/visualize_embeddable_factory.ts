@@ -19,7 +19,7 @@
 
 import { EmbeddableFactory } from 'ui/embeddable';
 import { getVisualizeLoader } from 'ui/visualize/loader';
-import { VisualizeEmbeddable } from './visualize_embeddable';
+import { VisualizeEmbeddable, VisualizeInput, VisualizeOutput } from './visualize_embeddable';
 
 import { Legacy } from 'kibana';
 import { EmbeddableInstanceConfiguration, OnEmbeddableStateChanged } from 'ui/embeddable';
@@ -27,12 +27,14 @@ import { SavedVisualizations } from '../types';
 import { DisabledLabEmbeddable } from './disabled_lab_embeddable';
 import { getIndexPattern } from './get_index_pattern';
 
-export class VisualizeEmbeddableFactory extends EmbeddableFactory {
+export const VISUALIZE_EMBEDDABLE_TYPE = 'visualization';
+
+export class VisualizeEmbeddableFactory extends EmbeddableFactory<VisualizeInput, VisualizeOutput> {
   private savedVisualizations: SavedVisualizations;
   private config: Legacy.KibanaConfig;
 
   constructor(savedVisualizations: SavedVisualizations, config: Legacy.KibanaConfig) {
-    super({ name: 'visualization' });
+    super({ name: VISUALIZE_EMBEDDABLE_TYPE });
     this.config = config;
     this.savedVisualizations = savedVisualizations;
   }
@@ -43,15 +45,16 @@ export class VisualizeEmbeddableFactory extends EmbeddableFactory {
 
   /**
    *
-   * @param {Object} panelMetadata. Currently just passing in panelState but it's more than we need, so we should
+   * @param panelMetadata. Currently just passing in panelState but it's more than we need, so we should
    * decouple this to only include data given to us from the embeddable when it's added to the dashboard. Generally
    * will be just the object id, but could be anything depending on the plugin.
-   * @param {function} onEmbeddableStateChanged
-   * @return {Promise.<{ metadata, onContainerStateChanged, render, destroy }>}
+   * @param onEmbeddableStateChanged
+   * @return
    */
   public async create(
     panelMetadata: EmbeddableInstanceConfiguration,
-    onEmbeddableStateChanged: OnEmbeddableStateChanged
+    onEmbeddableStateChanged: OnEmbeddableStateChanged,
+    initialInput: VisualizeInput
   ) {
     const visId = panelMetadata.id;
     const editUrl = this.getEditPath(visId);
@@ -61,17 +64,20 @@ export class VisualizeEmbeddableFactory extends EmbeddableFactory {
     const isLabsEnabled = this.config.get<boolean>('visualize:enableLabs');
 
     if (!isLabsEnabled && savedObject.vis.type.stage === 'experimental') {
-      return new DisabledLabEmbeddable(savedObject.title);
+      return new DisabledLabEmbeddable(savedObject.title, initialInput);
     }
 
     const indexPattern = await getIndexPattern(savedObject);
     const indexPatterns = indexPattern ? [indexPattern] : [];
-    return new VisualizeEmbeddable({
-      onEmbeddableStateChanged,
-      savedVisualization: savedObject,
-      editUrl,
-      loader,
-      indexPatterns,
-    });
+    return new VisualizeEmbeddable(
+      {
+        onEmbeddableStateChanged,
+        savedVisualization: savedObject,
+        editUrl,
+        loader,
+        indexPatterns,
+      },
+      initialInput
+    );
   }
 }

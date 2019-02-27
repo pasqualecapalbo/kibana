@@ -20,21 +20,17 @@
 import { EuiContextMenuPanelDescriptor } from '@elastic/eui';
 import { i18n } from '@kbn/i18n';
 import { connect } from 'react-redux';
-import {
-  buildEuiContextMenuPanels,
-  ContainerState,
-  ContextMenuPanel,
-  Embeddable,
-} from 'ui/embeddable';
+import { buildEuiContextMenuPanels, ContextMenuPanel } from 'ui/embeddable';
 import { panelActionsStore } from '../../store/panel_actions_store';
 import {
-  getCustomizePanelAction,
   getEditPanelAction,
   getInspectorPanelAction,
   getRemovePanelAction,
   getToggleExpandPanelAction,
 } from './panel_actions';
 import { PanelOptionsMenu, PanelOptionsMenuProps } from './panel_options_menu';
+
+import { actionRegistry, triggerRegistry } from 'ui/embeddable';
 
 import {
   closeContextMenu,
@@ -49,6 +45,11 @@ import {
 import { Dispatch } from 'redux';
 import { CoreKibanaState } from '../../../selectors';
 import { DashboardViewMode } from '../../dashboard_view_mode';
+import {
+  DashboardContainer,
+  DashboardEmbeddable,
+  DashboardEmbeddableInput,
+} from '../../embeddables/dashboard_container';
 import {
   getContainerState,
   getEmbeddable,
@@ -73,14 +74,15 @@ interface PanelOptionsMenuContainerDispatchProps {
 
 interface PanelOptionsMenuContainerOwnProps {
   panelId: PanelId;
-  embeddable?: Embeddable;
+  embeddable: DashboardEmbeddable;
+  container: DashboardContainer;
 }
 
 interface PanelOptionsMenuContainerStateProps {
   panelTitle?: string;
   editUrl: string | null | undefined;
   isExpanded: boolean;
-  containerState: ContainerState;
+  containerState: DashboardEmbeddableInput;
   visibleContextMenuPanelId: PanelId | undefined;
   isViewMode: boolean;
 }
@@ -175,26 +177,20 @@ const mergeProps = (
     });
 
     const actions = [
-      getInspectorPanelAction({
-        closeContextMenu: closeMyContextMenuPanel,
-        panelTitle,
-      }),
-      getEditPanelAction(),
-      getCustomizePanelAction({
-        onResetPanelTitle,
-        onUpdatePanelTitle,
-        title: panelTitle,
-        closeContextMenu: closeMyContextMenuPanel,
-      }),
+      //   getInspectorPanelAction({
+      //     closeContextMenu: closeMyContextMenuPanel,
+      //     panelTitle,
+      //   }),
+      //  // getEditPanelAction(),
       getToggleExpandPanelAction({ isExpanded, toggleExpandedPanel }),
       getRemovePanelAction(onDeletePanel),
     ].concat(panelActionsStore.actions);
 
-    panels = buildEuiContextMenuPanels({
+    panels = buildEuiContextMenuPanels<DashboardEmbeddable, DashboardContainer>({
       contextMenuPanel,
       actions,
       embeddable: ownProps.embeddable,
-      containerState,
+      container: ownProps.container,
     });
   }
 
@@ -204,6 +200,7 @@ const mergeProps = (
     closeContextMenu: closeMyContextMenuPanel,
     isPopoverOpen,
     isViewMode,
+    container: ownProps.container,
   };
 };
 

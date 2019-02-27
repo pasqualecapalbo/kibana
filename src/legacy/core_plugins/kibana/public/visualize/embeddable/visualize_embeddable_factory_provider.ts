@@ -18,8 +18,28 @@
  */
 
 import { Legacy } from 'kibana';
-import { EmbeddableFactoriesRegistryProvider } from 'ui/embeddable/embeddable_factories_registry';
+import { EmbeddableFactoriesRegistryProvider } from 'ui/embeddable';
 import { IPrivate } from 'ui/private';
+import 'ui/registry/field_formats';
+import 'uiExports/autocompleteProviders';
+import 'uiExports/contextMenuActions';
+import 'uiExports/devTools';
+import 'uiExports/docViews';
+import 'uiExports/embeddableFactories';
+import 'uiExports/fieldFormatEditors';
+import 'uiExports/fieldFormats';
+import 'uiExports/home';
+import 'uiExports/indexManagement';
+import 'uiExports/inspectorViews';
+import 'uiExports/savedObjectTypes';
+import 'uiExports/search';
+import 'uiExports/shareContextMenuExtensions';
+import 'uiExports/visEditorTypes';
+import 'uiExports/visRequestHandlers';
+import 'uiExports/visResponseHandlers';
+import 'uiExports/visTypes';
+import 'uiExports/visualize';
+import '../saved_visualizations';
 import { SavedVisualizations } from '../types';
 import { VisualizeEmbeddableFactory } from './visualize_embeddable_factory';
 

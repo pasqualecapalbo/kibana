@@ -17,20 +17,27 @@
  * under the License.
  */
 
-import React from 'react';
-import PropTypes from 'prop-types';
-import { store } from '../../store';
-import { Provider } from 'react-redux';
-import { DashboardViewportContainer } from './dashboard_viewport_container';
+import { Trigger } from 'ui/embeddable/actions/trigger';
+import { Filter } from 'ui/embeddable/types';
 
-export function DashboardViewportProvider(props) {
-  return (
-    <Provider store={store}>
-      <DashboardViewportContainer {...props} />
-    </Provider>
-  );
+class TriggerRegistry {
+  private triggers: { [key: string]: Trigger<any> } = {};
+
+  public addTrigger<I>(trigger: Trigger<I>) {
+    this.triggers[trigger.id] = trigger;
+  }
+
+  public getTrigger(id: string) {
+    return this.triggers[id];
+  }
 }
 
-DashboardViewportProvider.propTypes = {
-  getEmbeddableFactory: PropTypes.func.isRequired,
-};
+export const triggerRegistry = new TriggerRegistry();
+
+export const SHOW_VIEW_MODE_ACTIONS = 'viewModeMenu';
+export const SHOW_EDIT_MODE_ACTIONS = 'editModeMenu';
+export const FILTER_ACTION = 'filterAction';
+
+triggerRegistry.addTrigger(new Trigger(SHOW_EDIT_MODE_ACTIONS));
+triggerRegistry.addTrigger(new Trigger(SHOW_VIEW_MODE_ACTIONS));
+triggerRegistry.addTrigger(new Trigger<Filter[]>(FILTER_ACTION));

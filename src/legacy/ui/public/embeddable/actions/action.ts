@@ -17,25 +17,29 @@
  * under the License.
  */
 
+import { Container } from 'ui/embeddable/containers';
 import { Embeddable } from '../embeddables';
 
-export interface ExecuteOptions<C, A> {
-  embeddable: Embeddable<C, any>;
-  containerContext: C;
-  actionContext: A;
+export interface ExecuteOptions<ActionInput, ActionEmbeddable, ActionContainer> {
+  embeddable: ActionEmbeddable;
+  actionInput: ActionInput;
+  container: ActionContainer;
 }
 
-export abstract class Action<C, A> {
+export abstract class Action<
+  ActionInput,
+  ContainerState,
+  ActionEmbeddable extends Embeddable<ContainerState, any>,
+  ActionContainer extends Container<any, any, ContainerState>
+> {
   public readonly id: string;
   constructor({ id }: { id: string }) {
     this.id = id;
   }
-  public abstract execute(executeOptions: ExecuteOptions<C, A>): void;
-  public abstract isCompatable({
-    embeddable,
-    containerContext,
-  }: {
-    embeddable: Embeddable<C, any>;
-    containerContext: C;
-  }): Promise<boolean>;
+
+  public abstract isCompatible(embeddable: ActionEmbeddable): Promise<boolean>;
+
+  public abstract execute(
+    executeOptions: ExecuteOptions<ActionInput, ActionEmbeddable, ActionContainer>
+  ): void;
 }

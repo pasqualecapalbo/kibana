@@ -17,18 +17,16 @@
  * under the License.
  */
 
-import { EmbeddableState } from '../types';
+import { ErrorEmbeddable } from 'ui/embeddable/embeddables/error_embeddable';
 import { Embeddable } from './embeddable';
 export interface EmbeddableInstanceConfiguration {
   id: string;
 }
 
-export type OnEmbeddableStateChanged = (embeddableStateChanges: EmbeddableState) => void;
-
 /**
  * The EmbeddableFactory creates and initializes an embeddable instance
  */
-export abstract class EmbeddableFactory {
+export abstract class EmbeddableFactory<I, O> {
   public readonly name: string;
 
   /**
@@ -51,6 +49,7 @@ export abstract class EmbeddableFactory {
    */
   public abstract create(
     containerMetadata: { id: string },
-    onEmbeddableStateChanged: OnEmbeddableStateChanged
-  ): Promise<Embeddable>;
+    onEmbeddableStateChanged: (embeddableStateChanges: O) => void,
+    initialInput: I
+  ): Promise<Embeddable<I, O> | ErrorEmbeddable>;
 }

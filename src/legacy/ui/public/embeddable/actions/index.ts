@@ -19,3 +19,5 @@
 
 export { Action } from './action';
 export { actionRegistry } from './actions_registry';
+export { Trigger } from './trigger';
+export { triggerRegistry } from './trigger_registry';
